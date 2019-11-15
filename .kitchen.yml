@@ -1,18 +1,38 @@
 ---
 driver:
-  name: vagrant
+  name: ec2
+  aws_ssh_key_id: niamh_aws_key
+  region: us-west-2
+  associate_public_ip: true
+#  instance_type: m5.large
+  retryable_sleep: 10
+  retryable_tries: 60
+  tags:
+    X-Contact: "ncahill"
+    X-Application: "bosch-sharepoint-test"
+    X-Dept: "sales"
+    X-Customer: "Test-Kitchen"
+    X-Project: "Test-Kitchen"
+    X-TTL: 4
 
 provisioner:
   name: chef_zero
-  # You may wish to disable always updating cookbooks in CI or other testing environments.
-  # For example:
-  #   always_update_cookbooks: <%= !ENV['CI'] %>
-  always_update_cookbooks: true
+  deprecations_as_errors: true
+  product_name: chef
+  channel: current
 
 verifier:
   name: inspec
 
 platforms:
+  - name: windows-2012r2
+    driver:
+      image_id: ami-01cc0d539987bcec8
+    transport:
+      name: winrm
+      elevated: true
+      password: "5cpq7Yi)zk9"
+      user: Administrator
 
 suites:
   - name: default
@@ -20,5 +40,5 @@ suites:
       - recipe[sharepoint::default]
     verifier:
       inspec_tests:
-        - test/smoke/default
+        - test/integration/default
     attributes:

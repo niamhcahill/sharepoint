@@ -28,7 +28,7 @@ action :install do
       not_if '(Get-PackageProvider -Name NuGet) -ne $null'
     end
     powershell_script 'Install SharePointDSC Module' do
-      code 'Install-Module SharePointDSC -Confirm:$true'
+      code 'Install-Module SharePointDSC -Force'
       guard_interpreter :powershell_script
       not_if ::File.exist?('C:\\Program Files\\WindowsPowerShell\\Modules\\SharePointDSC').to_s
     end
@@ -56,6 +56,7 @@ action :install do
   end
   dsc_resource 'InstallPrereqs' do
     resource :SPInstallPrereqs
+    property :IsSingleInstance, 'Yes'
     property :Ensure, 'Present'
     property :SXSpath, new_resource.sxs_source
     property :InstallerPath, "#{new_resource.source_path}\\prerequisiteinstaller.exe"
@@ -76,6 +77,7 @@ action :install do
   end
   dsc_resource 'InstallSharePoint' do
     resource :SPInstall
+    property :IsSingleInstance, 'Yes'
     property :Ensure, 'Present'
     property :BinaryDir, new_resource.source_path
     property :ProductKey, new_resource.sp_license_key
